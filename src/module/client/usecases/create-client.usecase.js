@@ -1,8 +1,8 @@
-import { generateInstance } from "../factories/client.factories";
+const instance = require("../factories/client.factories");
 
-export class CreateClientUseCase {
+class CreateClientUseCase {
     constructor(){
-        this.clientRepository = generateInstance()
+        this.clientRepository = instance.generateInstance()
     }
 
     async execute(req){
@@ -11,8 +11,14 @@ export class CreateClientUseCase {
             const entity = new Client(item)
             const {error,valid} = entity.isValid()
             if(!valid){
-                res
+                return {
+                    error: error.join(',')
+                }
             }
+
+            await this.clientRepository.create(entity)
         }
     }
 }
+
+module.exports = CreateClientUseCase

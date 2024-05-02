@@ -2,7 +2,8 @@ const GetClientUseCase = require("../usecases/get-clients.usecase");
 const GetByIdClientUseCase = require("../usecases/get-by-id-client.usecase");
 const MESSAGES = require("../../../contants/exceptions/client.exception.json");
 const DEFAULT_CONTENT_TYPE = require("../../../contants/index.contants");
-const Client = require("../entities/client.entity");
+const { CreateClientUseCase } = require("../usecases/create-client.usecase");
+const HTTP_STATUS = require("../../../contants/http_status");
 
 const ClientRoutes = {
   "/clients:get": async (_, res) => {
@@ -10,6 +11,7 @@ const ClientRoutes = {
 
     const data = await getClientUseCase.execute();
 
+    res.writeHead(HTTP_STATUS.OK, DEFAULT_CONTENT_TYPE);
     res.write(
       JSON.stringify({
         data,
@@ -25,21 +27,31 @@ const ClientRoutes = {
     const data = await getByIdClientUseCase.execute(id);
 
     if (!data) {
-      res.writeHead(404, DEFAULT_CONTENT_TYPE);
+      res.writeHead(HTTP_STATUS.NOT_FOUND, DEFAULT_CONTENT_TYPE);
       return res.end(JSON.stringify({ message: MESSAGES.notFound }));
     }
 
     res.write(
       JSON.stringify({
-        data, 
+        data,
       })
     );
 
     return res.end();
   },
-  "/client:post": async (req,res) => {
-      
-  }
+  "/client:post": async (req, res) => {
+    const createClientUseCase = new CreateClientUseCase();
+
+    const data = await createClientUseCase.execute(req);
+
+    if (data.error) {
+      res.writeHead(HTTP_STATUS.BAD_REQUEST);
+      res.write(JSON.stringify(data.error));
+    }
+
+    res.writeHead(HTTP_STATUS.OK, DEFAULT_CONTENT_TYPE);
+    res.end(JSON.stringify({ message: MESSAGES.created }));
+  },
 };
 
 module.exports = ClientRoutes;

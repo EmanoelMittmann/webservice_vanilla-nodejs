@@ -1,5 +1,4 @@
-const Router = require('../module/client/controllers/index.js')
-const DEFAULT_CONTENT_TYPE = require('../contants/index.contants.js')
+const Router = require('../module/controllers.js')
 
 const handler = (request, response) => {
     const {url, method} = request;

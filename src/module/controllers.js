@@ -1,4 +1,4 @@
-const ClientController = require('./client.controller')
+const ClientController = require('./client/controllers/client.controller')
 
 const Router = Object.assign({},{
     Client:ClientController,
